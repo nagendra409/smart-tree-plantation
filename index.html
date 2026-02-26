@@ -1,107 +1,20 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Smart Tree Plantation System</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(to right, #d4fc79, #96e6a1);
-      text-align: center;
-    }
-
-    header {
-      background-color: #0b6623;
-      color: white;
-      padding: 20px;
-      font-size: 28px;
-      font-weight: bold;
-      letter-spacing: 1px;
-    }
-
-    .section {
-      padding: 30px 20px;
-    }
-
-    .card {
-      background: white;
-      padding: 20px;
-      margin: 20px auto;
-      width: 320px;
-      border-radius: 12px;
-      box-shadow: 0 6px 15px rgba(0,0,0,0.2);
-      animation: fadeIn 1s ease-in;
-    }
-
-    input {
-      width: 90%;
-      padding: 10px;
-      margin: 8px 0;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-    }
-
-    button {
-      padding: 10px 20px;
-      background-color: #0b6623;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 15px;
-    }
-
-    button:hover {
-      background-color: #145a32;
-    }
-
-    #treeList {
-      margin-top: 20px;
-      font-size: 15px;
-    }
-
-    footer {
-      background-color: #0b6623;
-      color: white;
-      padding: 15px;
-      margin-top: 30px;
-    }
-
-    @keyframes fadeIn {
-      from {opacity: 0;}
-      to {opacity: 1;}
-    }
-  </style>
-</head>
-<body>
-
-<header>
-  🌳 Smart Tree Plantation & Monitoring System
-</header>
-
-<div class="section">
-  <h2>About the Project</h2>
-  <p>This system helps track tree plantation activities digitally and encourages students to contribute towards a greener future.</p>
-</div>
-
-<div class="card">
-  <h3>Plant a Tree</h3>
-  <input type="text" id="treeName" placeholder="Enter Tree Name">
-  <input type="text" id="location" placeholder="Enter Location">
-  <button onclick="addTree()">Plant Tree</button>
-</div>
-
-<h2>Total Trees Planted: <span id="count">0</span></h2>
-
-<div id="treeList"></div>
-
-<footer>
-  Green Technology Project | CSE Department
-</footer>
-
 <script>
-  let trees = [];
+  let trees = JSON.parse(localStorage.getItem("trees")) || [];
+
+  function displayTrees() {
+    let list = document.getElementById("treeList");
+    list.innerHTML = "";
+    document.getElementById("count").innerText = trees.length;
+
+    trees.forEach((tree, index) => {
+      list.innerHTML += `
+        <p>
+          🌱 <b>${tree.name}</b> planted at <b>${tree.location}</b>
+          <button onclick="deleteTree(${index})" style="margin-left:10px;background:red;">X</button>
+        </p>
+      `;
+    });
+  }
 
   function addTree() {
     let name = document.getElementById("treeName").value;
@@ -113,15 +26,20 @@
     }
 
     trees.push({name, location});
-    document.getElementById("count").innerText = trees.length;
-
-    let list = document.getElementById("treeList");
-    list.innerHTML += "<p>🌱 <b>" + name + "</b> planted at <b>" + location + "</b></p>";
+    localStorage.setItem("trees", JSON.stringify(trees));
 
     document.getElementById("treeName").value = "";
     document.getElementById("location").value = "";
-  }
-</script>
 
-</body>
-</html>
+    displayTrees();
+  }
+
+  function deleteTree(index) {
+    trees.splice(index, 1);
+    localStorage.setItem("trees", JSON.stringify(trees));
+    displayTrees();
+  }
+
+  // Load data when page opens
+  window.onload = displayTrees;
+</script>
